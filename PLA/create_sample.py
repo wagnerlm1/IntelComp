@@ -60,6 +60,7 @@ def make_line(points):
 
     return eq, result
 
+
 def make_fx(eq, result):
 
     """
@@ -83,12 +84,12 @@ def make_fx(eq, result):
 
     fx = sinal1 + eq.split('y')[1].split()[1] + sinal2 + " {}".format(abs(result))
 
-    print("A f(x) utilizada é: {}".format(fx))
+    # print("A f(x) utilizada é: {}".format(fx))
 
     return fx
 
 
-def evaluate_points(sample, eq, result):
+def evaluate_sample(sample, eq, result):
     """
     Evaluate sample with +1 if > eq or -1 if < eq
     :param sample: list
@@ -108,9 +109,9 @@ def evaluate_points(sample, eq, result):
         y = item[1]
 
         if eval(eq) >= result:
-            aux = '+1'
+            aux = 1
         if eval(eq) < result:
-            aux = '-1'
+            aux = -1
 
         evaluated_list.append([x, y, aux])
 
@@ -118,7 +119,23 @@ def evaluate_points(sample, eq, result):
 
     return df
 
+
 def plot_eq_sample(fx, sample_evaluate, intervalX=[-1, 1], intervalY=[-1, 1]):
+    """
+    With a fx and evaluated values plot an graph
+    :param fx: string
+        Function in format y=ax+b
+    :param sample_evaluate: Pandas.DataFrame
+        Dataframe with X, Y and Values
+    :param intervalX: list of two values
+        Limits of space in X axe
+    :param intervalY: list of two values
+        Limits of space in Y axe
+    :return:
+    """
+    sample_evaluate = sample_evaluate.copy()
+
+    sample_evaluate['Value'] = sample_evaluate['Value'].apply(lambda x: '+1' if x == 1 else '-1')
 
     fig = px.scatter(sample_evaluate, x='X', y='Y', color='Value')
     x = np.array(intervalX)
@@ -128,15 +145,15 @@ def plot_eq_sample(fx, sample_evaluate, intervalX=[-1, 1], intervalY=[-1, 1]):
     fig = fig.update_xaxes(range=intervalX)
     fig = fig.update_yaxes(range=intervalY)
 
-    path_save = os.path.join("D:\PycharmProjects\Mestrado\IntelComp\Results", "fxClasses.png")
+    path_save = os.path.join("/home/wagner/PycharmProjects/IntelComp/PLA/Results", "fxClasses.png")
     fig.write_image(path_save)
 
-def main():
+def create_sample(n=10):
 
     # Generate two random points
     two_points = random_points()
 
-    print("P0 = {} || P1 = {}". format(two_points[0], two_points[1]))
+    # print("P0 = {} || P1 = {}". format(two_points[0], two_points[1]))
 
     # Generate line equation
     eq, result = make_line(two_points)
@@ -145,15 +162,10 @@ def main():
     fx = make_fx(eq, result)
 
     # Generate sample
-    n = 10  # Number of itens in sample
     sample = random_points(n)
     # Evaluating sample points
-    sample_evaluate = evaluate_points(sample, eq, result)
+    sample_evaluate = evaluate_sample(sample, eq, result)
     # Plotting sample values and fx
     plot_eq_sample(fx, sample_evaluate)
 
-if __name__== "__main__":
-    main()
-
-
-
+    return sample_evaluate, eq, fx, result
