@@ -19,20 +19,24 @@ def main():
 
         sample_evaluate, eq, fx, result = create_sample(n)
         # Test to practice learning
-        test = PerceptronLinear(sample_evaluate)
+        test = PerceptronLinear(sample_evaluate, fx=fx)
         test.practice()
+
+        if i == 0:
+            test.plot()
 
         listIterConvergence.append(test.iter_convergence)
 
         # To get probability of F and g disagree in their classification of a random point
         aux_P = []
+
         for v in range(100):
 
             point = random_points(1)  # Generate one random point
             test.classificate(point)  # Classificating point in g
 
             f_classification = evaluate_sample(point, eq, result)  # Classificating point in f
-            g_classification = test.classficated  # Save g classification
+            g_classification = test.classificated  # Save g classification
 
             # If classifications are the same add 1 to aux_P else add 0
             if f_classification['Value'].values[0] == g_classification['Value'].values[0]:
